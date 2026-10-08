@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro'
+
+import Tag from '../components/Tag.astro'
+
+import projects from '../projects/projects.json'
+---
+<Layout>
+	<div class="flex flex-col items-center w-full gap-10">
+        <div class="flex flex-col items-center">
+            <img src="/images/me.jpg" width="150" class="rounded-full">
+            <br />
+            <h1 class="text-lg font-semibold">Hello, I'm Eugenio!</h1>
+            <p>I am currently an undergraduate at NUS.</p>
+        </div>
+        <div class="flex flex-col w-full gap-5">   
+            <h1 class="text-xl text-center">Projects</h1>
+            {projects.map((p) => (
+                <div class="flex flex-col">
+                    <h1 class="text-lg font-semibold">{p.title}</h1>
+                    <div class="flex flew-row gap-1">
+                        {p.tags.map((t) => (
+                            <Tag text={t} />
+                        ))}
+                    </div>
+                    <p>{p.description}</p>
+                    <a href={p.link} 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="text-accent hover:text-secondary duration-300">{p.link}</a>
+                </div>
+            ))}
+        </div>
+    </div>
+</Layout>

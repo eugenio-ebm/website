@@ -1,0 +1,19 @@
+---
+import Layout from './Layout.astro'
+
+import BlogHeader from '../components/Blog/BlogHeader.astro'
+
+import articles from "../blog/articles.json"
+
+const { id } = Astro.props
+
+const a = articles.find(a => a.id === id)
+---
+<Layout title="Application Syntax Matters">
+    <div class="flex flex-col w-full gap-10 py-10">
+        <BlogHeader title={a.title}
+                    subtitle={a.subtitle}
+                    date={a.date} />
+        <slot />
+    </div>
+</Layout>

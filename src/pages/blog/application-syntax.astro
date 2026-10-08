@@ -1,0 +1,119 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro'
+
+const id = 1
+---
+<BlogLayout id={id}>
+<div class="flex flex-col w-full gap-5">
+<section class="flex flex-col gap-1">
+<h1 class="text-xl font-semibold">Function Application</h1>
+<p>When it comes to function application, we are most familiar with the usual bracket syntax:</p>
+<pre>
+    foo(3, 4)
+</pre>
+<p>This aligns with how we view functions in the mathematical sense.</p>
+<p>Despite this correspondence, many functional programming languages such as Haskell and OCaml do not use this syntax for function application.</p>
+<p>In this article, we explore the different ways of expressing function application, and their benefits.</p>
+</section>
+
+
+
+<section class="flex flex-col gap-1">
+<h1 class="text-xl font-semibold">Currying</h1>
+<p>Another way of expressing function application is in the form of curried functions:</p>
+<pre>
+    foo 3 4
+</pre>
+<p>A curried function is a function that only takes one argument at a time. For example, if <code>foo</code> took two arguments before, then the curried version will be a function that takes the first argument, and returns a function that would take the second:</p>
+<pre is:raw>
+    function foo(x) {
+        return y => x + y
+    }
+</pre>
+<p>Without curried syntax, you would have to write <code>foo(3)(4)</code> to get seven.</p>
+<p>Another benefit of currying is partial application, which lets you define functions like these:</p>
+<pre is:raw>
+    addOne = foo 1
+    addOneToAll = map addOne
+</pre>
+<p>where <code>map : (a -> b) -> List a -> List b</code>.</p>
+</section>
+
+
+
+<section class="flex flex-col gap-1">
+<h1 class="text-xl font-semibold">Holes</h1>
+
+<p>Some language designers have tried to preserve bracket syntax while allowing partial application. This gave rise to the idea of expressions with holes:</p>
+<pre>
+    foo(3, _)
+</pre>
+<p>This is equivalent to <code>y => foo(3, y)</code>, but it allows for function to retain their fixed arities.</p>
+
+<h2 class="text font-semibold">Benefits</h2>
+
+<p>A first real benefit of holed expressions is that it allows for arbitrary ordering of arguments. For example, these two snippets are not the same:</p>
+<pre>
+    -- sub x y = x - y
+
+    minusOne = sub 1 -- really?
+    minusOne = \x -> sub x 1
+</pre>
+<p>With holed expressions, you can define</p>
+<pre>
+    // sub(x, y) = x - y
+
+    minusOne = sub(_, 1)
+</pre>
+<p>and that would be correct.</p>
+
+<p>Another benefit comes during type checking and compilation. Since all functions have a fixed arity, we can determine at each call site whether we need to create closures or not. Since partial application is explicitly expressed as holed expressions, any function call without holes can safely be treated as a function call rather than a closure creation.</p>
+<p>For example, consider the curried function</p>
+<pre>
+    foo = \x -> \y -> x + y
+</pre>
+<p>and the closure conversion step</p>
+<pre is:raw>
+    int foo_2(env, y) {
+        int x = env[0];
+        return x + y;
+    }
+
+    int foo_1(env, x) {
+        env e = env_create(1);
+        e[0] = x;
+        f = clos_create(foo_2, env);
+        return f;
+    }
+</pre>
+<p>We had to closure-convert the inner function because we do not know whether partial application of <code>foo</code> would occur anywhere else in the program.</p>
+<p>However, with holed expressions, we can define <code>foo</code> as</p>
+<pre is:raw>
+    foo(x, y) = x + y
+</pre>
+and there is only one closure conversion step
+<pre is:raw>
+    int foo(env, x, y) {
+        return x + y;
+    }
+</pre>
+
+<h2 class="text font-semibold">Drawbacks</h2>
+<p>A potential drawback is that holes become ambiguous when there is more than one hole.</p>
+<p>Consider the following snippet:</p>
+<pre>
+    f = map(add(_, sub(_, 1)), _)
+</pre>
+<p>It is unclear whether we intended for <code>f</code> to have</p>
+<ul class="list-disc list-inside">
+    <li>3 arguments, where the first argument maps to the leftmost hole</li>
+    <li>3 arguments, where the first argument maps to the rightmost hole</li>
+    <li>2 arguments, where the first argument maps to the first two holes</li>
+    <li>...</li>
+    <li>1 argument, where the argument maps to all the holes</li>
+</ul>
+<p>We could potentially annotate each hole such as <code>map(add($2, sub($1, 1)), $3)</code>.</p>
+<p>However, we do not know whether <code>sub($1, 1)</code> should be interpreted as a function that takes one argument, or as a holed expression as part of the definition of <code>f</code>.</p>
+</section>
+</div>
+</BlogLayout>

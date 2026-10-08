@@ -1,0 +1,14 @@
+[
+    {
+        "title": "Indentation-Sensitive Parsing",
+        "tags": ["NUS", "Parsing", "Open-Source"],
+        "description": "An extension of the Happy parser generator for indentation-sensitive parsing in Haskell",
+        "link": "https://github.com/plilab/happy/tree/indentation"
+    },
+    {
+        "title": "Automated Provenance Graph Analysis",
+        "tags": ["NUS", "Cybersecurity", "Logic Programming"],
+        "description": "Automated provenance graph construction and threat detection using C++ and Prolog",
+        "link": "https://github.com/eugenio-ebm/pgtk-cpp"
+    }
+]
