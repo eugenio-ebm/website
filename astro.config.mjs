@@ -5,7 +5,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://eugenio-ebm.github.io/website',
+  site: 'http://eugeniom.com',
+  base: '/website',
   vite: {
     plugins: [tailwindcss()]
   }
